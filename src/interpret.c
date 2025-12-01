@@ -6,6 +6,13 @@
 
 static char *ASToperators[] = {"+", "-", "*", "/"};
 
+/**
+ * interpretAST - interpret an AST and return the integer result
+ *
+ * @param n The AST node to interpret
+ *
+ * @return The integer result of interpreting the AST
+ */
 int interpretAST(struct ASTnode *n) {
     int leftval, rightval;
 
