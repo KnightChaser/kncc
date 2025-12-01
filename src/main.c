@@ -1,11 +1,11 @@
 #include "decl.h"
 #include "defs.h"
-#include "errno.h"
 
 #define extern_
-
 #include "data.h"
 #undef extern_
+
+#include <errno.h>
 
 static void init() {
     Line = 1;
@@ -17,22 +17,9 @@ static void usage(char *prog) {
     exit(1);
 }
 
-// List of printable tokens
-char *tokstr[] = {"+", "-", "*", "/", "intilt"};
-
-static void scanfile() {
-    struct token T;
-
-    while (scan(&T)) {
-        printf("Toekn %s", tokstr[T.token]);
-        if (T.token == T_INTLIT) {
-            printf(", value %d", T.intvalue);
-        }
-        printf("\n");
-    }
-}
-
 int main(int argc, char **argv) {
+    struct ASTnode *n;
+
     if (argc != 2) {
         usage(argv[0]);
     }
@@ -45,7 +32,9 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    scanfile();
+    scan(&Token); // Get the first token from the input
+    n = binexpr();
+    printf("%d", interpretAST(n));
 
     fclose(Infile);
     exit(0);

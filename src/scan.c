@@ -87,8 +87,10 @@ int scan(struct token *t) {
 
     c = skip();
 
+    // Determine the token type based on the character
     switch (c) {
     case EOF:
+        t->token = T_EOF;
         return 0; // End of file
     case '+':
         t->token = T_PLUS;

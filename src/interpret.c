@@ -1,0 +1,43 @@
+// src/interpret.c
+
+#include "data.h"
+#include "decl.h"
+#include "defs.h"
+
+static char *ASToperators[] = {"+", "-", "*", "/"};
+
+int interpretAST(struct ASTnode *n) {
+    int leftval, rightval;
+
+    if (n->left) {
+        leftval = interpretAST(n->left);
+    }
+    if (n->right) {
+        rightval = interpretAST(n->right);
+    }
+
+    // NOTE:
+    // Debugging, print what operation is being performed
+    if (n->op == A_INTLIT) {
+        printf("Integer literal: %d\n", n->intvalue);
+    } else {
+        printf("Performing operation: %d %s %d\n", leftval, ASToperators[n->op],
+               rightval);
+    }
+
+    switch (n->op) {
+    case A_ADD:
+        return leftval + rightval;
+    case A_SUBTRACT:
+        return leftval - rightval;
+    case A_MULTIPLY:
+        return leftval * rightval;
+    case A_DIVIDE:
+        return leftval / rightval;
+    case A_INTLIT:
+        return n->intvalue;
+    default:
+        fprintf(stderr, "Unknown AST operator: %d, line: %d\n", n->op, Line);
+        exit(1);
+    }
+}
