@@ -4,7 +4,12 @@
 #include "decl.h"
 #include "defs.h"
 
-static char *ASToperators[] = {"+", "-", "*", "/"};
+static char *ASToperators[] = {
+    "+", // Addition
+    "-", // Subtraction
+    "*", // Multiplication
+    "/"  // Division
+};
 
 /**
  * interpretAST - interpret an AST and return the integer result
@@ -25,12 +30,14 @@ int interpretAST(struct ASTnode *n) {
 
     // NOTE:
     // Debugging, print what operation is being performed
-    if (n->op == A_INTLIT) {
-        printf("Integer literal: %d\n", n->intvalue);
-    } else {
-        printf("Performing operation: %d %s %d\n", leftval, ASToperators[n->op],
-               rightval);
-    }
+    //
+    // if (n->op == A_INTLIT) {
+    //     printf("Integer literal: %d\n", n->intvalue);
+    // } else {
+    //     printf("Performing operation: %d %s %d\n", leftval,
+    //     ASToperators[n->op],
+    //            rightval);
+    // }
 
     switch (n->op) {
     case A_ADD:

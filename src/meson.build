@@ -1,5 +1,13 @@
 # Simple meson build for the kncc executable
 
-executable('kncc', ['main.c', 'scan.c', 'expr.c', 'tree.c', 'interpret.c'],
+executable('kncc', [
+    'cgn.c',
+    'expr.c',
+    'gen.c',
+    'interpret.c',
+    'main.c',
+    'scan.c',
+    'tree.c'
+  ],
   install: true
 )

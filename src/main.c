@@ -26,16 +26,25 @@ int main(int argc, char **argv) {
 
     init();
 
+    // Open up the input file
     Infile = fopen(argv[1], "r");
     if (Infile == NULL) {
         fprintf(stderr, "Cannot open %s: %s\n", argv[1], strerror(errno));
         exit(1);
     }
 
-    scan(&Token);   // Get the first token from the input
-    n = binexpr(0); // Parse the expression,
-                    // starting at precedence level 0 (lowest)
-    printf("%d", interpretAST(n));
+    // Create the output file
+    // TODO: make the output file name customizable later
+    if ((Outfile = fopen("out.s", "w")) == NULL) {
+        fprintf(stderr, "Cannot open out.s for writing: %s\n", strerror(errno));
+        exit(1);
+    }
+
+    scan(&Token);                  // Get the first token from the input
+    n = binexpr(0);                // Parse the expression,
+                                   // starting at precedence level 0 (lowest)
+    printf("%d", interpretAST(n)); // Interpret the AST
+    generateAsmCode(n);            // Generate assembly code
 
     fclose(Infile);
     exit(0);
