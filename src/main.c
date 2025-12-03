@@ -1,5 +1,6 @@
+// src/main.c
+
 #include "decl.h"
-#include "defs.h"
 
 #define extern_
 #include "data.h"
@@ -12,14 +13,12 @@ static void init() {
     Putback = '\n';
 }
 
-static void usage(char *prog) {
-    fprintf(stderr, "Usage: %s infile\n", prog);
+static void usage(char *program) {
+    fprintf(stderr, "Usage: %s infile\n", program);
     exit(1);
 }
 
 int main(int argc, char **argv) {
-    struct ASTnode *n;
-
     if (argc != 2) {
         usage(argv[0]);
     }
@@ -40,12 +39,11 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    scan(&Token);                  // Get the first token from the input
-    n = binexpr(0);                // Parse the expression,
-                                   // starting at precedence level 0 (lowest)
-    printf("%d", interpretAST(n)); // Interpret the AST
-    generateAsmCode(n);            // Generate assembly code
+    scan(&Token);    // Get the first token from the input
+    genpreamble();   // Output the preamble
+    statements();    // Parse the statements in the input
+    genpostamble();  // Output the postamble
+    fclose(Outfile); // Close the output file and exit
 
-    fclose(Infile);
     exit(0);
 }

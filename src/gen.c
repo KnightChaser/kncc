@@ -1,5 +1,7 @@
 // src/gen.c
 
+// Generic code generator
+
 #include "data.h"
 #include "decl.h"
 #include "defs.h"
@@ -10,7 +12,7 @@
  * @n: The AST node to generate code for.
  * @return int The register index where the result is stored.
  */
-static int genAST(struct ASTnode *n) {
+int genAST(struct ASTnode *n) {
     int leftRegister, rightRegister;
 
     // Generate code for left and right subtrees recursively
@@ -40,15 +42,23 @@ static int genAST(struct ASTnode *n) {
 }
 
 /**
- * generateAsmCode - Generates assembly code for the given AST.
- *
- * @n: The root of the AST to generate code for.
+ * genpreamble - Wraps CPU-specific preamble generation.
  */
-void generateAsmCode(struct ASTnode *n) {
-    int reg;
+void genpreamble() { cgpreamble(); }
 
-    cgpreamble();
-    reg = genAST(n);
-    cgprintint(reg);
-    cgpostamble();
-}
+/**
+ * genpostamble - Wraps CPU-specific postamble generation.
+ */
+void genpostamble() { cgpostamble(); }
+
+/**
+ * genfreeregs - Frees all registers used during code generation.
+ */
+void genfreeregs() { freeAllRegisters(); }
+
+/**
+ * genprintint - Wraps CPU-specific integer printing.
+ *
+ * @reg: The register index containing the integer to print.
+ */
+void genprintint(int reg) { cgprintint(reg); }

@@ -4,13 +4,6 @@
 #include "decl.h"
 #include "defs.h"
 
-static char *ASToperators[] = {
-    "+", // Addition
-    "-", // Subtraction
-    "*", // Multiplication
-    "/"  // Division
-};
-
 /**
  * interpretAST - interpret an AST and return the integer result
  *

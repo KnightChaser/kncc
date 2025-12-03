@@ -56,7 +56,7 @@ static int skip(void) {
     int c;
 
     c = next();
-    while (' ' == c || '\t' == c || '\n' == c || '\r' == c) {
+    while (' ' == c || '\t' == c || '\n' == c || '\r' == c || '\f' == c) {
         c = next();
     }
     return c;
@@ -83,14 +83,71 @@ static int scanint(int c) {
 }
 
 /**
- * scan - scan the next token from input
+ * scanIdentifier - Scan an identifier from the input fiel and
+ *                  store it in the provided buffer.
+ *
+ * @param c The first character of the identifier
+ * @param buf The buffer to store the scanned identifier
+ * @param lengthLimit The maximum length of the identifier (including NULL
+ * terminator, '\0')
+ *
+ * @return The length of the scanned identifier
+ */
+static int scanIdentifier(int c, char *buf, int lengthLimit) {
+    int i = 0;
+
+    // Allow digits, alphabets, and underscores
+    while (isalpha(c) || isdigit(c) || c == '_') {
+        if (lengthLimit - 1 == i) {
+            // Considering the NULL character, it's a signal of buffer overflow
+            printf("Identifier too long on line %d (Length limit: %d)\n", Line,
+                   lengthLimit);
+            exit(1);
+        } else if (i < lengthLimit - 1) {
+            buf[i++] = c;
+        }
+        c = next();
+    }
+
+    putback(c);
+    buf[i] = '\0'; // NULL terminate the string. Don't forget that! >_<
+
+    return i;
+}
+
+/**
+ * keyword - check if a string is a keyword and return its token type.
+ *
+ * NOTE:
+ * Switch on the first character to reduce the number of expensive
+ * string comparisons via strcmp().
+ *
+ * @param s The string to check
+ *
+ * @return The token type if the string is a keyword, 0 otherwise
+ */
+static int keyword(char *s) {
+    switch (*s) {
+    case 'p':
+        if (!strcmp(s, "print")) {
+            return T_PRINT;
+        }
+        break;
+    }
+    return 0;
+}
+
+/**
+ * scan - Scan and return the next token found in the input.
  *
  * @param t Pointer to the token structure to store the scanned token
  * @return 1 if a token was successfully scanned, 0 if end of file
  */
 int scan(struct token *t) {
     int c;
+    int tokenType;
 
+    // Skip whitespace characters
     c = skip();
 
     // Determine the token type based on the character
@@ -110,14 +167,30 @@ int scan(struct token *t) {
     case '/':
         t->token = T_SLASH;
         break;
+    case ';':
+        t->token = T_SEMICOLON;
+        break;
     default:
-        // If it's a digit, scan the literal integer value in
         if (isdigit(c)) {
+            // If it's a digit, scan the literal integer value in
             t->intvalue = scanint(c);
             t->token = T_INTLIT;
             break;
+        } else if (isalpha(c) || c == '_') {
+            // If it's supposed to be a keyword, return that token instead!
+            scanIdentifier(c, Text, TEXTLEN);
+
+            if ((tokenType = keyword(Text))) {
+                t->token = tokenType;
+                break;
+            }
+
+            // Not a recognized keyword, so an error for now
+            printf("Unrecognized symbol %s on line %d\n", Text, Line);
+            exit(1);
         }
 
+        // The character isn't part of any recognized token, raise an error
         printf("Unrecognized character '%c' on line %d\n", c, Line);
         exit(1);
     }

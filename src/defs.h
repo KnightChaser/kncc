@@ -1,18 +1,26 @@
 // src/defs.h
+#ifndef DEFS_H
+#define DEFS_H
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+// Length of symbols in input
+#define TEXTLEN 512
+
 // Token types
 enum {
-    T_EOF,    // end of file
-    T_PLUS,   // +
-    T_MINUS,  // -
-    T_STAR,   // *
-    T_SLASH,  // /
-    T_INTLIT, // integer literal (decimal whole number which have 1 or more
-              // digits of 0-9)
+    T_EOF,       // end of file
+    T_PLUS,      // +
+    T_MINUS,     // -
+    T_STAR,      // *
+    T_SLASH,     // /
+    T_INTLIT,    // integer literal (decimal whole number which have 1 or more
+                 // digits of 0-9)
+    T_SEMICOLON, // ;
+    T_PRINT      // keyword "print"
 };
 
 // Token structure
@@ -37,3 +45,5 @@ struct ASTnode {
     struct ASTnode *right; // right subtree
     int intvalue;          // used if op == A_INTLIT
 };
+
+#endif

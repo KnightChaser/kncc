@@ -4,6 +4,7 @@
 #define extern_ extern
 #endif
 
+#include "defs.h"
 #include <stdio.h> // Just for FILE
 
 // Current Line number
@@ -16,3 +17,5 @@ extern_ FILE *Infile;
 extern_ FILE *Outfile;
 // Latest token scanned
 extern_ struct token Token;
+// Last identifier scanned (e.g. "print")
+extern_ char Text[TEXTLEN + 1];
