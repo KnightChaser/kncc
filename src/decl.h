@@ -9,10 +9,10 @@ struct token;
 int scan(struct token *t);
 
 // NOTE: tree.c
-struct ASTnode *mkastnode(int op, struct ASTnode *left, struct ASTnode *right,
-                          int intvalue);
-struct ASTnode *mkastleaf(int op, int intvalue);
-struct ASTnode *mkastunary(int op, struct ASTnode *left, int intvalue);
+struct ASTnode *makeASTNode(int op, struct ASTnode *left, struct ASTnode *right,
+                            int intvalue);
+struct ASTnode *makeASTLeaf(int op, int intvalue);
+struct ASTnode *makeASTUnary(int op, struct ASTnode *left, int intvalue);
 
 // NOTE: gen.c
 int genAST(struct ASTnode *n);

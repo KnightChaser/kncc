@@ -20,7 +20,7 @@ static struct ASTnode *primary(void) {
     case T_INTLIT:
         // If it's an integer literal, create a leaf node.
         // Then scan the next token. It will be used by the caller.
-        n = mkastleaf(A_INTLIT, Token.intvalue);
+        n = makeASTLeaf(A_INTLIT, Token.intvalue);
         scan(&Token);
         return n;
     default:
@@ -65,12 +65,12 @@ static int OpPrecedence[] = {
 };
 
 /**
- * op_precedence - Get the precedence of a given operator token.
+ * operatorPrecedence - Get the precedence of a given operator token.
  *
  * @param tokentype The token type to check.
  * @return int The precedence of the operator.
  */
-static int op_precedence(int tokentype) {
+static int operatorPrecedence(int tokentype) {
     int precedence = OpPrecedence[tokentype];
     if (precedence == 0) {
         fprintf(stderr, "Unknown operator: %d, line: %d\n", tokentype, Line);
@@ -101,14 +101,14 @@ struct ASTnode *binexpr(int ptp) {
 
     // While the precedence of this token is
     // more than that of the previous token precedence
-    while (op_precedence(tokentype) > ptp) {
+    while (operatorPrecedence(tokentype) > ptp) {
         scan(&Token);
 
         // Recurse to get the right-hand side expression
-        right = binexpr(op_precedence(tokentype));
+        right = binexpr(operatorPrecedence(tokentype));
 
         // Combine left and right nodes into a binary AST node
-        left = mkastnode(arithmeticOperator(tokentype), left, right, 0);
+        left = makeASTNode(arithmeticOperator(tokentype), left, right, 0);
 
         // Update the details of the current token.
         // If we hit a semicolon, it means it's end of the sentence,

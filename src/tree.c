@@ -5,7 +5,7 @@
 #include "defs.h"
 
 /**
- * mkastnode - create an AST node
+ * makeASTNode - create an AST node
  *
  * @param op       the operator
  * @param left     pointer to left subtree
@@ -14,13 +14,13 @@
  *
  * @return pointer to the newly created AST node
  */
-struct ASTnode *mkastnode(int op, struct ASTnode *left, struct ASTnode *right,
-                          int intvalue) {
+struct ASTnode *makeASTNode(int op, struct ASTnode *left, struct ASTnode *right,
+                            int intvalue) {
     struct ASTnode *n;
 
     n = (struct ASTnode *)malloc(sizeof(struct ASTnode));
     if (n == NULL) {
-        fprintf(stderr, "out of memory in mkastnode()\n");
+        fprintf(stderr, "out of memory in makeASTNode()\n");
         exit(1);
     }
 
@@ -33,19 +33,19 @@ struct ASTnode *mkastnode(int op, struct ASTnode *left, struct ASTnode *right,
 }
 
 /**
- * mkastleaf - create a leaf AST node
+ * makeASTLeaf - create a leaf AST node
  *
  * @param op       the operator
  * @param intvalue integer value
  *
  * @return pointer to the newly created leaf AST node
  */
-struct ASTnode *mkastleaf(int op, int intvalue) {
-    return mkastnode(op, NULL, NULL, intvalue);
+struct ASTnode *makeASTLeaf(int op, int intvalue) {
+    return makeASTNode(op, NULL, NULL, intvalue);
 }
 
 /**
- * mkastunary - create a unary AST node
+ * makeASTUnary - create a unary AST node
  *
  * @param op       the operator
  * @param left     pointer to left subtree
@@ -54,5 +54,5 @@ struct ASTnode *mkastleaf(int op, int intvalue) {
  * @return pointer to the newly created unary AST node
  */
 struct ASTnode *mkastunary(int op, struct ASTnode *left, int intvalue) {
-    return mkastnode(op, left, NULL, intvalue);
+    return makeASTNode(op, left, NULL, intvalue);
 }

@@ -63,12 +63,12 @@ static int skip(void) {
 }
 
 /**
- * scanint - scan an integer literal from input
+ * scanInteger - scan an integer literal from input
  *
  * @param c The first character of the integer literal
  * @return The integer value of the scanned integer literal
  */
-static int scanint(int c) {
+static int scanInteger(int c) {
     int k = 0;
     int value = 0;
 
@@ -173,7 +173,7 @@ int scan(struct token *t) {
     default:
         if (isdigit(c)) {
             // If it's a digit, scan the literal integer value in
-            t->intvalue = scanint(c);
+            t->intvalue = scanInteger(c);
             t->token = T_INTLIT;
             break;
         } else if (isalpha(c) || c == '_') {
