@@ -11,7 +11,7 @@
  * @return ASTnode* The AST node representing the primary expression.
  */
 static struct ASTnode *primary(void) {
-    struct ASTnode *n;
+    struct ASTnode *n = NULL;
     int id;
 
     // For an INTLIT token, make a leaf AST node for it
