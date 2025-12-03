@@ -11,7 +11,6 @@
 
 #include "data.h"
 #include "decl.h"
-#include "defs.h"
 
 static int freeRegisters[4];
 static char *registerList[4] = {"r8", "r9", "r10", "r11"};
