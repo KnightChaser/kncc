@@ -31,20 +31,21 @@ int codegenAST(struct ASTnode *n, int reg) {
 
     switch (n->op) {
     case A_ADD:
-        return cgadd(leftRegister, rightRegister);
+        return nasmAddRegs(leftRegister, rightRegister);
     case A_SUBTRACT:
-        return cgsub(leftRegister, rightRegister);
+        return nasmSubRegs(leftRegister, rightRegister);
     case A_MULTIPLY:
-        return cgmul(leftRegister, rightRegister);
+        return nasmMulRegs(leftRegister, rightRegister);
     case A_DIVIDE:
-        return cgdiv(leftRegister, rightRegister);
+        return nasmDivRegsSigned(leftRegister, rightRegister);
     case A_INTLIT:
-        return cgloadint(n->v.intvalue);
+        return nasmLoadImmediateInt(n->v.intvalue);
     case A_IDENTIFIER:
-        return cgloadglobsym(GlobalSymbolTable[n->v.identifierIndex].name);
+        return nasmLoadGlobalSymbol(
+            GlobalSymbolTable[n->v.identifierIndex].name);
     case A_LVALUEIDENTIFIER:
-        return cgstoreglobsym(reg,
-                              GlobalSymbolTable[n->v.identifierIndex].name);
+        return nasmStoreGlobalSymbol(
+            reg, GlobalSymbolTable[n->v.identifierIndex].name);
     case A_ASSIGN:
         // The work has already been done, return the result
         return rightRegister;
@@ -58,28 +59,28 @@ int codegenAST(struct ASTnode *n, int reg) {
 /**
  * codegenPreamble - Wraps CPU-specific preamble generation.
  */
-void codegenPreamble() { cgpreamble(); }
+void codegenPreamble() { nasmPreamble(); }
 
 /**
  * codegenPostamble - Wraps CPU-specific postamble generation.
  */
-void codegenPostamble() { cgpostamble(); }
+void codegenPostamble() { nasmPostamble(); }
 
 /**
  * codegenResetRegisters - Frees all registers used during code generation.
  */
-void codegenResetRegisters() { freeAllRegisters(); }
+void codegenResetRegisters() { nasmResetRegisterPool(); }
 
 /**
  * codegenPrintInt - Wraps CPU-specific integer printing.
  *
  * @reg: The register index containing the integer to print.
  */
-void codegenPrintInt(int reg) { cgprintint(reg); }
+void codegenPrintInt(int reg) { nasmPrintIntFromReg(reg); }
 
 /**
  * codegenDeclareGlobalSymbol - Wraps CPU-specific global symbol generation.
  *
  * @name: The name of the global symbol.
  */
-void codegenDeclareGlobalSymbol(char *name) { cgglobsym(name); }
+void codegenDeclareGlobalSymbol(char *name) { nasmDeclareGlobalSymbol(name); }

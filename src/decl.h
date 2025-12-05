@@ -24,18 +24,18 @@ void codegenDeclareGlobalSymbol(char *s);
 
 // NOTE: cgn.c
 // Code generation utilities (NASM x86-64)
-void freeAllRegisters(void);
-void cgpreamble();
-void cgpostamble();
-int cgloadint(int value);
-int cgloadglobsym(char *identifier);
-int cgadd(int r1, int r2);
-int cgsub(int r1, int r2);
-int cgmul(int r1, int r2);
-int cgdiv(int r1, int r2);
-void cgprintint(int r);
-int cgstoreglobsym(int registerIndex, char *identifier);
-void cgglobsym(char *symbol);
+void nasmResetRegisterPool(void);
+void nasmPreamble();
+void nasmPostamble();
+int nasmLoadImmediateInt(int value);
+int nasmLoadGlobalSymbol(char *identifier);
+int nasmStoreGlobalSymbol(int registerIndex, char *identifier);
+void nasmDeclareGlobalSymbol(char *symbol);
+int nasmAddRegs(int dstReg, int srcReg);
+int nasmSubRegs(int dstReg, int srcReg);
+int nasmMulRegs(int dstReg, int srcReg);
+int nasmDivRegsSigned(int dividendReg, int divisorReg);
+void nasmPrintIntFromReg(int reg);
 
 // NOTE: expr.c
 struct ASTnode *binexpr(int rbp);
