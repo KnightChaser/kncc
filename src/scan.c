@@ -83,7 +83,7 @@ static int scanInteger(int c) {
 }
 
 /**
- * scanIdentifier - Scan an identifier from the input fiel and
+ * scanIdentifier - Scan an identifier from the input file and
  *                  store it in the provided buffer.
  *
  * @param c The first character of the identifier
