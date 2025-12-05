@@ -44,13 +44,13 @@ static struct ASTnode *primary(void) {
 }
 
 /**
- * arithmeticOperator - Convert a binary operator token to its corresponding AST
- * arithmetic operator.
+ * tokenToASTOperator - Convert token into corresponding AST node
+ * e.g. T_PLUS(+) token means A_ADD, which is the AST node type
  *
  * @param token The token to map.
  * @return int The corresponding arithmetic operator.
  */
-int arithmeticOperator(int token) {
+int tokenToASTOperator(int token) {
     switch (token) {
     // Arithmetic operators
     case T_PLUS:
@@ -149,7 +149,7 @@ struct ASTnode *binexpr(int ptp) {
         right = binexpr(operatorPrecedence(tokentype));
 
         // Combine left and right nodes into a binary AST node
-        left = makeASTNode(arithmeticOperator(tokentype), left, right, 0);
+        left = makeASTNode(tokenToASTOperator(tokentype), left, right, 0);
 
         // Update the details of the current token.
         // If we hit a semicolon, it means it's end of the sentence,
