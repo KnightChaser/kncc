@@ -14,13 +14,13 @@ struct ASTnode *makeASTNode(int op, struct ASTnode *left, struct ASTnode *right,
 struct ASTnode *makeASTLeaf(int op, int intvalue);
 struct ASTnode *makeASTUnary(int op, struct ASTnode *left, int intvalue);
 
-// NOTE: gen.c
-int genAST(struct ASTnode *n, int reg);
-void genpreamble();
-void genpostamble();
-void genfreeregs();
-void genprintint(int reg);
-void genglobsym(char *s);
+// NOTE: gen.c (target-agnostic code generation)
+int codegenAST(struct ASTnode *n, int reg);
+void codegenPreamble();
+void codegenPostamble();
+void codegenResetRegisters();
+void codegenPrintInt(int reg);
+void codegenDeclareGlobalSymbol(char *s);
 
 // NOTE: cgn.c
 // Code generation utilities (NASM x86-64)

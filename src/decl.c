@@ -8,6 +8,6 @@ void variableDeclaration(void) {
     match(T_INT, "int");
     identifier();
     addGlobalSymbol(Text);
-    genglobsym(Text);
+    codegenDeclareGlobalSymbol(Text);
     semicolon();
 }

@@ -1,28 +1,32 @@
 // src/gen.c
 
-// Generic code generator
+/**
+ * NOTE:
+ * Generic code generator
+ * (Backend-specific layer)
+ */
 
 #include "data.h"
 #include "decl.h"
 #include "defs.h"
 
 /**
- * genAST - Generates code for the given AST node and its subtrees.
+ * codegenAST - Generates code for the given AST node and its subtrees.
  *
  * @n: The AST node to generate code for.
  * @param reg: The register index to use for code generation.
  *
  * @return int The register index where the result is stored.
  */
-int genAST(struct ASTnode *n, int reg) {
+int codegenAST(struct ASTnode *n, int reg) {
     int leftRegister, rightRegister;
 
     // Get the left and right sub-tree values
     if (n->left) {
-        leftRegister = genAST(n->left, -1);
+        leftRegister = codegenAST(n->left, -1);
     }
     if (n->right) {
-        rightRegister = genAST(n->right, leftRegister);
+        rightRegister = codegenAST(n->right, leftRegister);
     }
 
     switch (n->op) {
@@ -52,30 +56,30 @@ int genAST(struct ASTnode *n, int reg) {
 }
 
 /**
- * genpreamble - Wraps CPU-specific preamble generation.
+ * codegenPreamble - Wraps CPU-specific preamble generation.
  */
-void genpreamble() { cgpreamble(); }
+void codegenPreamble() { cgpreamble(); }
 
 /**
- * genpostamble - Wraps CPU-specific postamble generation.
+ * codegenPostamble - Wraps CPU-specific postamble generation.
  */
-void genpostamble() { cgpostamble(); }
+void codegenPostamble() { cgpostamble(); }
 
 /**
- * genfreeregs - Frees all registers used during code generation.
+ * codegenResetRegisters - Frees all registers used during code generation.
  */
-void genfreeregs() { freeAllRegisters(); }
+void codegenResetRegisters() { freeAllRegisters(); }
 
 /**
- * genprintint - Wraps CPU-specific integer printing.
+ * codegenPrintInt - Wraps CPU-specific integer printing.
  *
  * @reg: The register index containing the integer to print.
  */
-void genprintint(int reg) { cgprintint(reg); }
+void codegenPrintInt(int reg) { cgprintint(reg); }
 
 /**
- * genglobsym - Wraps CPU-specific global symbol generation.
+ * codegenDeclareGlobalSymbol - Wraps CPU-specific global symbol generation.
  *
  * @name: The name of the global symbol.
  */
-void genglobsym(char *name) { cgglobsym(name); }
+void codegenDeclareGlobalSymbol(char *name) { cgglobsym(name); }

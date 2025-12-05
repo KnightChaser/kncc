@@ -35,9 +35,9 @@ void printStatement(void) {
 
     // Parse the following expression and generate the assembly code
     tree = binexpr(0);
-    reg = genAST(tree, -1);
-    genprintint(reg);
-    genfreeregs();
+    reg = codegenAST(tree, -1);
+    codegenPrintInt(reg);
+    codegenResetRegisters();
 
     // Match the following semicolon(;)
     semicolon();
@@ -71,8 +71,8 @@ void assignmentStatement(void) {
     tree = makeASTNode(A_ASSIGN, exprNode, lvalueNode, 0);
 
     // Generate code for the assignment
-    genAST(tree, -1);
-    genfreeregs();
+    codegenAST(tree, -1);
+    codegenResetRegisters();
 
     // Match the following semicolon(;)
     semicolon();

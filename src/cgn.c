@@ -1,7 +1,9 @@
 // src/cgn.c
 
 /**
+ * NOTE:
  * Code generation in NASM x86-64 assembly
+ * (Target-specific layer)
  *
  * NOTE: Use the following command to earn executable from generated asm code
  * $ nasm -f elf64 (output assembly path) -o out.o
