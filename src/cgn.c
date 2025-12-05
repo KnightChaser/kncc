@@ -272,7 +272,7 @@ static int nasmCompare(int r1, int r2, char *setInstruction) {
     fprintf(Outfile, "\t%s\t%s\n", setInstruction, byteRegisterList[r2]);
     // WARNING:
     // 3. Since setX only sets the lower 8 bits, we need to zero-extend it
-    //  to the full 64 bits
+    //    to the full 64 bits
     fprintf(Outfile, "\tand\t%s, 255\n", qwordRegisterList[r2]);
     freeRegister(r1);
 
