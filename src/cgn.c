@@ -15,7 +15,7 @@
 #include "decl.h"
 
 static int freeRegisters[4];
-static char *registerList[4] = {"r8", "r9", "r10", "r11"};
+static char *qwordRegisterList[4] = {"r8", "r9", "r10", "r11"};
 
 /**
  * nasmResetRegisterPool - Marks all registers as free for allocation.
@@ -56,7 +56,7 @@ static int allocateRegister(void) {
 static void freeRegister(int r) {
     if (freeRegisters[r] == 1) {
         fprintf(stderr, "Error: Register %s is already free\n",
-                registerList[r]);
+                qwordRegisterList[r]);
         exit(1);
     }
     freeRegisters[r] = 1; // Mark as free
@@ -118,7 +118,8 @@ void nasmPostamble() {
 int nasmLoadImmediateInt(int value) {
     int registerIndex = allocateRegister();
 
-    fprintf(Outfile, "\tmov\t%s, %d\n", registerList[registerIndex], value);
+    fprintf(Outfile, "\tmov\t%s, %d\n", qwordRegisterList[registerIndex],
+            value);
     return registerIndex;
 }
 
@@ -133,7 +134,7 @@ int nasmLoadImmediateInt(int value) {
 int nasmLoadGlobalSymbol(char *identifier) {
     int registerIndex = allocateRegister();
 
-    fprintf(Outfile, "\tmov\t%s, [%s]\n", registerList[registerIndex],
+    fprintf(Outfile, "\tmov\t%s, [%s]\n", qwordRegisterList[registerIndex],
             identifier);
     return registerIndex;
 }
@@ -149,7 +150,7 @@ int nasmLoadGlobalSymbol(char *identifier) {
  */
 int nasmStoreGlobalSymbol(int registerIndex, char *identifier) {
     fprintf(Outfile, "\tmov\t[%s], %s\n", identifier,
-            registerList[registerIndex]);
+            qwordRegisterList[registerIndex]);
     return registerIndex;
 }
 
@@ -171,7 +172,8 @@ void nasmDeclareGlobalSymbol(char *symbol) {
  * Returns: Index of the register containing the result.
  */
 int nasmAddRegs(int r1, int r2) {
-    fprintf(Outfile, "\tadd\t%s, %s\n", registerList[r1], registerList[r2]);
+    fprintf(Outfile, "\tadd\t%s, %s\n", qwordRegisterList[r1],
+            qwordRegisterList[r2]);
     freeRegister(r2);
 
     return r1;
@@ -186,7 +188,8 @@ int nasmAddRegs(int r1, int r2) {
  * Returns: Index of the register containing the result.
  */
 int nasmSubRegs(int r1, int r2) {
-    fprintf(Outfile, "\tsub\t%s, %s\n", registerList[r1], registerList[r2]);
+    fprintf(Outfile, "\tsub\t%s, %s\n", qwordRegisterList[r1],
+            qwordRegisterList[r2]);
     freeRegister(r2);
 
     return r1;
@@ -201,7 +204,8 @@ int nasmSubRegs(int r1, int r2) {
  * Returns: Index of the register containing the result.
  */
 int nasmMulRegs(int r1, int r2) {
-    fprintf(Outfile, "\timul\t%s, %s\n", registerList[r1], registerList[r2]);
+    fprintf(Outfile, "\timul\t%s, %s\n", qwordRegisterList[r1],
+            qwordRegisterList[r2]);
     freeRegister(r2);
 
     return r1;
@@ -216,10 +220,10 @@ int nasmMulRegs(int r1, int r2) {
  * Returns: Index of the register containing the result (quotient).
  */
 int nasmDivRegsSigned(int r1, int r2) {
-    fprintf(Outfile, "\tmov\trax, %s\n", registerList[r1]);
+    fprintf(Outfile, "\tmov\trax, %s\n", qwordRegisterList[r1]);
     fprintf(Outfile, "\tcqo\n"); // Sign-extend rax into rdx:rax
-    fprintf(Outfile, "\tidiv\t%s\n", registerList[r2]);
-    fprintf(Outfile, "\tmov\t%s, rax\n", registerList[r1]);
+    fprintf(Outfile, "\tidiv\t%s\n", qwordRegisterList[r2]);
+    fprintf(Outfile, "\tmov\t%s, rax\n", qwordRegisterList[r1]);
     freeRegister(r2);
 
     return r1;
@@ -232,7 +236,7 @@ int nasmDivRegsSigned(int r1, int r2) {
  * @r: Index of the register containing the integer to print.
  */
 void nasmPrintIntFromReg(int r) {
-    fprintf(Outfile, "\tmov\trdi, %s\n", registerList[r]);
+    fprintf(Outfile, "\tmov\trdi, %s\n", qwordRegisterList[r]);
     fprintf(Outfile, "\tcall\tprintint\n");
     freeRegister(r);
 }
