@@ -1,6 +1,6 @@
-# Simple meson build for the kncc executable
+# Simple meson build for the keccc executable
 
-executable('kncc', [
+executable('keccc', [
     'cgn.c',
     'decl.c',
     'expr.c',
