@@ -33,10 +33,16 @@ enum {
     T_SEMICOLON,  // ;
     T_ASSIGN,     // =
     T_IDENTIFIER, // variable names
+    T_LBRACE,     // {
+    T_RBRACE,     // }
+    T_LPAREN,     // (
+    T_RPAREN,     // )
 
     // Keywords
     T_PRINT, // "print"
-    T_INT    // "int"
+    T_INT,   // "int"
+    T_IF,    // "if"
+    T_ELSE,  // "else"
 };
 
 // Token structure
@@ -60,19 +66,28 @@ enum {
     A_INTLIT,           // Integer literal
     A_IDENTIFIER,       // Identifier (variable)
     A_LVALUEIDENTIFIER, // L-value Identifier
-    A_ASSIGN            // Assignment
+    A_ASSIGN,           // Assignment
+    A_PRINT,            // Print statement
+    A_GLUE,             // Statement glue (for sequencing statements)
+    A_IF,               // If statement
 };
 
 // AST node structure
 struct ASTnode {
     int op;                  // operation to be performed on this tree
     struct ASTnode *left;    // left subtree
+    struct ASTnode *middle;  // middle subtree (for if-else statements)
     struct ASTnode *right;   // right subtree
     union {                  //
         int intvalue;        // integer value if op == A_INTLIT
         int identifierIndex; // symbol name if op == A_IDENTIFIER
     } v;
 };
+
+// NOTE:
+// Use NOREG when AST generation;
+// functions have no register to return
+#define NOREG -1
 
 // Symbol table structure
 struct symbolTable {

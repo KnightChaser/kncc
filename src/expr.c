@@ -75,6 +75,7 @@ int tokenToASTOperator(int token) {
         return A_LE;
     case T_GE:
         return A_GE;
+
     default:
         fprintf(stderr, "Unknown arithmetic operator: %d, line: %d\n", token,
                 Line);
@@ -149,7 +150,7 @@ struct ASTnode *binexpr(int ptp) {
         right = binexpr(operatorPrecedence(tokentype));
 
         // Combine left and right nodes into a binary AST node
-        left = makeASTNode(tokenToASTOperator(tokentype), left, right, 0);
+        left = makeASTNode(tokenToASTOperator(tokentype), left, NULL, right, 0);
 
         // Update the details of the current token.
         // If we hit a semicolon, it means it's end of the sentence,

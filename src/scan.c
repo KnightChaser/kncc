@@ -128,7 +128,15 @@ static int scanIdentifier(int c, char *buf, int lengthLimit) {
  */
 static int keyword(char *s) {
     switch (*s) {
+    case 'e':
+        if (!strcmp(s, "else")) {
+            return T_ELSE;
+        }
+        break;
     case 'i':
+        if (!strcmp(s, "if")) {
+            return T_IF;
+        }
         if (!strcmp(s, "int")) {
             return T_INT;
         }
@@ -174,6 +182,18 @@ int scan(struct token *t) {
         break;
     case ';':
         t->token = T_SEMICOLON;
+        break;
+    case '{':
+        t->token = T_LBRACE;
+        break;
+    case '}':
+        t->token = T_RBRACE;
+        break;
+    case '(':
+        t->token = T_LPAREN;
+        break;
+    case ')':
+        t->token = T_RPAREN;
         break;
     case '=':
         if ((c = next()) == '=') {

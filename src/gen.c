@@ -11,22 +11,127 @@
 #include "defs.h"
 
 /**
+ * getLabelNumber - Generates a unique label number for code generation.
+ *
+ * @return int A unique label number.
+ */
+static int getLabelNumber(void) {
+    static int id = 1;
+    return (id++);
+}
+
+/**
+ * codegenIFStatementAST - Generates code for an IF statement AST node.
+ *
+ * NOTE:
+ * The If statement is represented in the AST as follows:
+ * ----------------------------------------
+ *        [  A_IF  ]
+ *        /   |    \
+ *    cond  true  false
+ *  (left)(middle)(right)
+ * ----------------------------------------
+ * Conventional if statement will be
+ * converted into the following assembly
+ * structure
+ * ----------------------------------------
+ *        perform the opposite comparison
+ *        jump to L1 if true
+ *        perform the first block of code
+ *        jump to L2
+ * L1:
+ *        perform the other block of code
+ * L2:
+ * ----------------------------------------
+ *
+ * @n: The AST node representing the IF statement.
+ *
+ * @return int The register index where the result is stored (NOREG).
+ */
+static int codegenIFStatementAST(struct ASTnode *n) {
+    int labelFalseStatement;
+    int labelEndStatement;
+
+    // Generate two labels:
+    // - one for the false branch
+    // - one for the end of the if statement
+    // (When there is no ELSE clause, labelFalseStatement is the ending label.
+    labelFalseStatement = getLabelNumber();
+    if (n->right) {
+        labelEndStatement = getLabelNumber();
+    }
+
+    // Generate the condition code followed by a zero jump to the false label.
+    // We cheat by sending the labelFalseStatement as a register
+    codegenAST(n->left, labelFalseStatement, n->op);
+    codegenResetRegisters();
+
+    // Generate the true compoundd statement
+    codegenAST(n->middle, NOREG, n->op);
+    codegenResetRegisters();
+
+    if (n->right) {
+        nasmJump(labelEndStatement);
+    }
+
+    nasmLabel(labelFalseStatement);
+
+    // Optional ELSE clause exists
+    // Generate the false compount statement and the end label
+    if (n->right) {
+        codegenAST(n->right, NOREG, n->op);
+        codegenResetRegisters();
+        nasmLabel(labelEndStatement);
+    }
+
+    return NOREG;
+}
+
+/**
  * codegenAST - Generates code for the given AST node and its subtrees.
  *
  * @n: The AST node to generate code for.
  * @param reg: The register index to use for code generation.
+ * @param parentASTop: The operator of the parent AST node.
+ *
+ * NOTE:
+ * If parentASTop is A_IF, comparison operations will generate
+ * a jump instruction instead of setting a register value.
+ * (e.g., if (b < c) { ... } )
+ * Otherwise, comparison operations will set a register to 1 or 0
+ * (e.g., int a = (b < c); )
  *
  * @return int The register index where the result is stored.
  */
-int codegenAST(struct ASTnode *n, int reg) {
+int codegenAST(struct ASTnode *n, int reg, int parentASTop) {
     int leftRegister, rightRegister;
 
-    // Get the left and right sub-tree values
+    switch (n->op) {
+    case A_IF:
+        // If statement
+        return codegenIFStatementAST(n);
+    case A_GLUE:
+        // Do each sub-tree separately,
+        // and return NOREG since GLUE does not produce a value
+        // Then free registers used in each sub-tree
+        codegenAST(n->left, NOREG, n->op);
+        nasmResetRegisterPool();
+        codegenAST(n->right, NOREG, n->op);
+        nasmResetRegisterPool();
+
+        return NOREG;
+    }
+
+    // NOTE:
+    // General AST node handling below
+
+    // Get the left and right sub-tree value
     if (n->left) {
-        leftRegister = codegenAST(n->left, -1);
+        // Use NOREG because left subtree can use any register
+        leftRegister = codegenAST(n->left, NOREG, n->op);
     }
     if (n->right) {
-        rightRegister = codegenAST(n->right, leftRegister);
+        rightRegister = codegenAST(n->right, leftRegister, n->op);
     }
 
     switch (n->op) {
@@ -42,17 +147,20 @@ int codegenAST(struct ASTnode *n, int reg) {
 
     // Comparison operations
     case A_EQ:
-        return nasmCompareEqual(leftRegister, rightRegister);
     case A_NE:
-        return nasmCompareNotEqual(leftRegister, rightRegister);
     case A_LT:
-        return nasmCompareLessThan(leftRegister, rightRegister);
     case A_GT:
-        return nasmCompareGreaterThan(leftRegister, rightRegister);
     case A_LE:
-        return nasmCompareLessThanOrEqual(leftRegister, rightRegister);
     case A_GE:
-        return nasmCompareGreaterThanOrEqual(leftRegister, rightRegister);
+        // If the parent ASFT node is an A_IF,
+        // generate a compare followed by a jjump.
+        // Otherwise, compare registers and set one to 1 or 0 based on the
+        // comparison.
+        if (parentASTop == A_IF) {
+            return nasmCompareAndJump(n->op, leftRegister, rightRegister, reg);
+        } else {
+            return nasmCompareAndSet(n->op, leftRegister, rightRegister);
+        }
 
     // Leaf nodes
     case A_INTLIT:
@@ -66,6 +174,10 @@ int codegenAST(struct ASTnode *n, int reg) {
     case A_ASSIGN:
         // The work has already been done, return the result
         return rightRegister;
+    case A_PRINT:
+        codegenPrintInt(leftRegister);
+        codegenResetRegisters();
+        return NOREG;
 
     default:
         // Should not reach here; unsupported operation

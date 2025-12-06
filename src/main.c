@@ -19,6 +19,8 @@ static void usage(char *program) {
 }
 
 int main(int argc, char **argv) {
+    struct ASTnode *tree;
+
     if (argc != 2) {
         usage(argv[0]);
     }
@@ -39,11 +41,12 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    scan(&Token);       // Get the first token from the input
-    codegenPreamble();  // Output the preamble
-    statements();       // Parse the statements in the input
-    codegenPostamble(); // Output the postamble
-    fclose(Outfile);    // Close the output file and exit
+    scan(&Token);               // Get the first token from the input
+    codegenPreamble();          // Output the preamble
+    tree = compoundStatement(); // Parse the statements in the input
+    codegenAST(tree, NOREG, 0); // Generate code for the AST
+    codegenPostamble();         // Output the postamble
+    fclose(Outfile);            // Close the output file and exit
 
     exit(0);
 }

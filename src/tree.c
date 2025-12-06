@@ -9,12 +9,14 @@
  *
  * @param op       the operator
  * @param left     pointer to left subtree
+ * @param middle   pointer to middle subtree
  * @param right    pointer to right subtree
  * @param intvalue integer value (for leaf nodes)
  *
  * @return pointer to the newly created AST node
  */
-struct ASTnode *makeASTNode(int op, struct ASTnode *left, struct ASTnode *right,
+struct ASTnode *makeASTNode(int op, struct ASTnode *left,
+                            struct ASTnode *middle, struct ASTnode *right,
                             int intvalue) {
     struct ASTnode *n;
 
@@ -26,6 +28,7 @@ struct ASTnode *makeASTNode(int op, struct ASTnode *left, struct ASTnode *right,
 
     n->op = op;
     n->left = left;
+    n->middle = middle;
     n->right = right;
     n->v.intvalue = intvalue;
 
@@ -41,7 +44,7 @@ struct ASTnode *makeASTNode(int op, struct ASTnode *left, struct ASTnode *right,
  * @return pointer to the newly created leaf AST node
  */
 struct ASTnode *makeASTLeaf(int op, int intvalue) {
-    return makeASTNode(op, NULL, NULL, intvalue);
+    return makeASTNode(op, NULL, NULL, NULL, intvalue);
 }
 
 /**
@@ -54,5 +57,5 @@ struct ASTnode *makeASTLeaf(int op, int intvalue) {
  * @return pointer to the newly created unary AST node
  */
 struct ASTnode *makeASTUnary(int op, struct ASTnode *left, int intvalue) {
-    return makeASTNode(op, left, NULL, intvalue);
+    return makeASTNode(op, left, NULL, NULL, intvalue);
 }

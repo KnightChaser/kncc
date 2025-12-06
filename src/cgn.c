@@ -253,100 +253,127 @@ void nasmPrintIntFromReg(int r) {
 }
 
 /**
- * nasmCompare - Generates code to compare two registers and set the result
+ * nasmCompareAndSet - Generates code to compare two registers and set a third
+ * register based on the comparison result.
  *
- * NOTE:
- * This will generate code to compare the values in two registers
- * This will be used by wrapper functions such as nasmCompareEqual,
- * nasmCompareLessThan, etc.
- *
+ * @ASTop: The AST operation code representing the comparison.
  * @r1: Index of the first register.
  * @r2: Index of the second register.
- * @setInstruction: The set instruction to use (e.g., "sete", "setl").
+ *
+ * Returns: Index of the register containing the comparison result (0 or 1).
  */
-static int nasmCompare(int r1, int r2, char *setInstruction) {
-    // 1. Compare the two registers
+int nasmCompareAndSet(int ASTop, int r1, int r2) {
+    if (!((ASTop == A_EQ) || (ASTop == A_NE) || (ASTop == A_LT) ||
+          (ASTop == A_LE) || (ASTop == A_GT) || (ASTop == A_GE))) {
+        fprintf(stderr,
+                "Error: Invalid AST operation %d in nasmCompareAndSet\n",
+                ASTop);
+        exit(1);
+    }
+
     fprintf(Outfile, "\tcmp\t%s, %s\n", qwordRegisterList[r1],
             qwordRegisterList[r2]);
-    // 2. use setX flag to set the lower byte of r1
-    fprintf(Outfile, "\t%s\t%s\n", setInstruction, byteRegisterList[r2]);
-    // WARNING:
-    // 3. Since setX only sets the lower 8 bits, we need to zero-extend it
-    //    to the full 64 bits
-    fprintf(Outfile, "\tand\t%s, 255\n", qwordRegisterList[r2]);
+
+    // Set the lower 8 bits of r1 based on the comparison
+    char *byteRegister = byteRegisterList[r2];
+    switch (ASTop) {
+    case A_EQ:
+        fprintf(Outfile, "\tsete\t%s\n", byteRegister);
+        break;
+    case A_NE:
+        fprintf(Outfile, "\tsetne\t%s\n", byteRegister);
+        break;
+    case A_LT:
+        fprintf(Outfile, "\tsetl\t%s\n", byteRegister);
+        break;
+    case A_LE:
+        fprintf(Outfile, "\tsetle\t%s\n", byteRegister);
+        break;
+    case A_GT:
+        fprintf(Outfile, "\tsetg\t%s\n", byteRegister);
+        break;
+    case A_GE:
+        fprintf(Outfile, "\tsetge\t%s\n", byteRegister);
+        break;
+    default:
+        fprintf(stderr,
+                "Error: Unknown AST operation %d in nasmCompareAndSet\n",
+                ASTop);
+        exit(1);
+    }
+
+    // Zero-extend the result to the full register
+    fprintf(Outfile, "\tmovzb\t%s, %s\n", qwordRegisterList[r2], byteRegister);
+
     freeRegister(r1);
 
     return r2;
 }
 
 /**
- * nasmCompareEqual - Generates code to compare two registers for equality.
+ * nasmLabel - Outputs a label in the assembly code.
  *
- * @r1: Index of the first register.
- * @r2: Index of the second register.
- *
- * Returns: Index of the register containing the result
- * (1 if equal, 0 otherwise).
+ * @label: The label number to output.
  */
-int nasmCompareEqual(int r1, int r2) { return nasmCompare(r1, r2, "sete"); }
+void nasmLabel(int label) { fprintf(Outfile, "L%d:\n", label); }
 
 /**
- * nasmCompareNotEqual - Generates code to compare two registers for inequality.
+ * nasmJump - Generates an unconditional jump to a label.
  *
- * @r1: Index of the first register.
- * @r2: Index of the second register.
- *
- * Returns: Index of the register containing the result
- * (1 if not equal, 0 otherwise).
+ * @label: The label number to jump to.
  */
-int nasmCompareNotEqual(int r1, int r2) { return nasmCompare(r1, r2, "setne"); }
+void nasmJump(int label) { fprintf(Outfile, "\tjmp\tL%d\n", label); }
 
 /**
- * nasmCompareLessThan - Generates code to compare if r1 < r2.
+ * nasmCompareAndJump - Generates code to compare two registers and jump to a
+ * label based on the comparison result.
  *
+ * @ASTop: The AST operation code representing the comparison.
  * @r1: Index of the first register.
  * @r2: Index of the second register.
+ * @label: The label number to jump to if the comparison is true.
  *
- * Returns: Index of the register containing the result
- * (1 if r1 < r2, 0 otherwise).
+ * Returns: NOREG (indicating no register is returned).
  */
-int nasmCompareLessThan(int r1, int r2) { return nasmCompare(r1, r2, "setl"); }
+int nasmCompareAndJump(int ASTop, int r1, int r2, int label) {
+    if (!((ASTop == A_EQ) || (ASTop == A_NE) || (ASTop == A_LT) ||
+          (ASTop == A_LE) || (ASTop == A_GT) || (ASTop == A_GE))) {
+        fprintf(stderr,
+                "Error: Invalid AST operation %d in nasmCompareAndJump\n",
+                ASTop);
+        exit(1);
+    }
 
-/**
- * nasmCompareLessThanOrEqual - Generates code to compare if r1 <= r2.
- *
- * @r1: Index of the first register.
- * @r2: Index of the second register.
- *
- * Returns: Index of the register containing the result
- * (1 if r1 <= r2, 0 otherwise).
- */
-int nasmCompareLessThanOrEqual(int r1, int r2) {
-    return nasmCompare(r1, r2, "setle");
-}
+    fprintf(Outfile, "\tcmp\t%s, %s\n", qwordRegisterList[r1],
+            qwordRegisterList[r2]);
 
-/**
- * nasmCompareGreaterThan - Generates code to compare if r1 > r2.
- *
- * @r1: Index of the first register.
- * @r2: Index of the second register.
- *
- * Returns: Index of the register containing the result
- * (1 if r1 > r2, 0 otherwise).
- */
-int nasmCompareGreaterThan(int r1, int r2) {
-    return nasmCompare(r1, r2, "setg");
-}
+    switch (ASTop) {
+    case A_EQ:
+        fprintf(Outfile, "\tje\tL%d\n", label);
+        break;
+    case A_NE:
+        fprintf(Outfile, "\tjne\tL%d\n", label);
+        break;
+    case A_LT:
+        fprintf(Outfile, "\tjl\tL%d\n", label);
+        break;
+    case A_LE:
+        fprintf(Outfile, "\tjle\tL%d\n", label);
+        break;
+    case A_GT:
+        fprintf(Outfile, "\tjg\tL%d\n", label);
+        break;
+    case A_GE:
+        fprintf(Outfile, "\tjge\tL%d\n", label);
+        break;
+    default:
+        fprintf(stderr,
+                "Error: Unknown AST operation %d in nasmCompareAndJump\n",
+                ASTop);
+        exit(1);
+    }
 
-/**
- * nasmCompareGreaterThanOrEqual - Generates code to compare if r1 >= r2.
- *
- * @r1: Index of the first register.
- * @r2: Index of the second register.
- *
- * Returns: Index of the register containing the result
- * (1 if r1 >= r2, 0 otherwise).
- */
-int nasmCompareGreaterThanOrEqual(int r1, int r2) {
-    return nasmCompare(r1, r2, "setge");
+    nasmResetRegisterPool();
+
+    return NOREG;
 }

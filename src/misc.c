@@ -33,6 +33,26 @@ void semicolon(void) { match(T_SEMICOLON, ";"); }
 void identifier(void) { match(T_IDENTIFIER, "identifier"); }
 
 /**
+ * leftBrace - Matches a left brace token.
+ */
+void leftBrace(void) { match(T_LBRACE, "{"); }
+
+/**
+ * rightBrace - Matches a right brace token.
+ */
+void rightBrace(void) { match(T_RBRACE, "}"); }
+
+/**
+ * leftParenthesis - Matches a left parenthesis token.
+ */
+void leftParenthesis(void) { match(T_LPAREN, "("); }
+
+/**
+ * rightParenthesis - Matches a right parenthesis token.
+ */
+void rightParenthesis(void) { match(T_RPAREN, ")"); }
+
+/**
  * logFatal - Logs a fatal error message and exits.
  *
  * @s: The error message to log.
