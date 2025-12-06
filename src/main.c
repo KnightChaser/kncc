@@ -41,12 +41,13 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    scan(&Token);               // Get the first token from the input
-    codegenPreamble();          // Output the preamble
-    tree = compoundStatement(); // Parse the statements in the input
+    scan(&Token);      // First token
+    codegenPreamble(); // Emit preamble(global, printint, main prologue)
+    tree = compoundStatement(); // Parse the whole input into an AST
     codegenAST(tree, NOREG, 0); // Generate code for the AST
     codegenPostamble();         // Output the postamble
-    fclose(Outfile);            // Close the output file and exit
+
+    fclose(Outfile);
 
     exit(0);
 }

@@ -66,7 +66,7 @@ static int codegenIFStatementAST(struct ASTnode *n) {
     codegenAST(n->left, labelFalseStatement, n->op);
     codegenResetRegisters();
 
-    // Generate the true compoundd statement
+    // Generate the true branch's compound statement
     codegenAST(n->middle, NOREG, n->op);
     codegenResetRegisters();
 

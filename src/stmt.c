@@ -186,26 +186,35 @@ struct ASTnode *compoundStatement(void) {
          * example)
          * ```
          * {
-         *     int x;
-         *     x = 1;
-         *     print x;
-         *     x = x + 1;
-         *     print x;
-         * }
+         *     int i;
+         *     int j;
+         *     i = 6;
+         *     j = 12;
+         *     if (i < j) {
+         *         print i;
+         *     } else {
+         *         print j;
+         *     }
          * }
          * ```
          * will produce something like
          * ```
-         *     A_GLUE
-         *    /     \
-         *  A_GLUE  (print x)
-         *  /    \
-         * (x=1) (print x)
+         *               A_GLUE
+         *              /     \
+         *          A_GLUE    A_IF
+         *         /    \
+         *       (i=6) (j=12)
          * ```
+         * whereas each (i=6), (j=12), and A_IF are AST nodes.
+         * Especially, A_IF node has its own sub-nodes.
+         * ```
+         *         [    A_IF   ]
+         *        /     |      \
+         *     A_LT print(i) print(j)
+         *    (cond)   (T)     (F)
+         * ``
          */
 
-        if (treeNode) {
-        }
         if (leftASTNode == NULL) {
             // First AST node in the compound statement
             leftASTNode = treeNode;
