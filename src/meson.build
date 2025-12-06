@@ -5,7 +5,6 @@ executable('keccc', [
     'decl.c',
     'expr.c',
     'gen.c',
-    'interpret.c',
     'main.c',
     'misc.c',
     'scan.c',
