@@ -177,12 +177,12 @@ struct ASTnode *compoundStatement(void) {
         default:
             logFatal("Unexpected token in compound statement");
         }
-    }
 
-    // For each new tree, either save it in left
-    // or leave the left node empty, or glued the left and
-    // the new tree together!
-    if (treeNode) {
+        // For each new tree, either save it in left
+        // or leave the left node empty, or glued the left and
+        // the new tree together! }
+        if (treeNode) {
+        }
         if (leftASTNode == NULL) {
             // First AST node in the compound statement
             leftASTNode = treeNode;
