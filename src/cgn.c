@@ -347,24 +347,32 @@ int nasmCompareAndJump(int ASTop, int r1, int r2, int label) {
     fprintf(Outfile, "\tcmp\t%s, %s\n", qwordRegisterList[r1],
             qwordRegisterList[r2]);
 
+    // WARNING:
+    // Jump when the condition is FALSE
     switch (ASTop) {
     case A_EQ:
-        fprintf(Outfile, "\tje\tL%d\n", label);
-        break;
-    case A_NE:
+        // !=
         fprintf(Outfile, "\tjne\tL%d\n", label);
         break;
+    case A_NE:
+        // ==
+        fprintf(Outfile, "\tje\tL%d\n", label);
+        break;
     case A_LT:
-        fprintf(Outfile, "\tjl\tL%d\n", label);
+        // >=
+        fprintf(Outfile, "\tjge\tL%d\n", label);
         break;
     case A_LE:
-        fprintf(Outfile, "\tjle\tL%d\n", label);
-        break;
-    case A_GT:
+        // >
         fprintf(Outfile, "\tjg\tL%d\n", label);
         break;
+    case A_GT:
+        // <=
+        fprintf(Outfile, "\tjle\tL%d\n", label);
+        break;
     case A_GE:
-        fprintf(Outfile, "\tjge\tL%d\n", label);
+        // <
+        fprintf(Outfile, "\tjl\tL%d\n", label);
         break;
     default:
         fprintf(stderr,

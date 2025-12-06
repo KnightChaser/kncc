@@ -61,8 +61,8 @@ static int codegenIFStatementAST(struct ASTnode *n) {
         labelEndStatement = getLabelNumber();
     }
 
-    // Generate the condition code followed by a zero jump to the false label.
-    // We cheat by sending the labelFalseStatement as a register
+    // WARNING:
+    // Jump to false label when condition is FALSE
     codegenAST(n->left, labelFalseStatement, n->op);
     codegenResetRegisters();
 
